@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/sgnl-ai/adapter-framework v0.7.2
-	google.golang.org/grpc v1.58.2
+	google.golang.org/grpc v1.58.3
 )
 
 require (
