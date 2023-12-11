@@ -1,5 +1,22 @@
 # SGNL Ingestion Adapter Template
 
+The SGNL Ingestion Adapter Template is the starting point for creating a new SGNL Ingestion Adapter.
+
+## Prerequisites
+
+- A basic understanding of the Golang programming language.
+- An understanding of the [gRPC](https://grpc.io/) framework and [protocol buffers](https://protobuf.dev/).
+
+### Terminology
+
+**Adapter** - A simple gRPC server that queries an external API and parses the response into a format suitable for the SGNL ingestion service. More information on adapters can be found [TODO].
+
+**SGNL ingestion service** - One of SGNL's core microservices which is responsible for ingesting external data into SGNL's graph database.
+
+**Datasource** - An external REST API that provides data to be ingested into SGNL. For example, a CRM tool like Salesforce or HubSpot.
+
+## Getting Started
+
 1. Clone this repository.
 1. Update the names of `github.com/sgnl-ai/adapter-template/*` Golang packages in all files to match your new repository's name (e.g. `github.com/your-org/your-repo`):
 
