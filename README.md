@@ -143,13 +143,37 @@ A simplified flow chart of an incoming gRPC request to the adapter server is sho
 ![Adapter Flow](docs/assets/adapter_flow.png)
 
 1. A gRPC request which follows the [adapter Protobuf schema](https://github.com/SGNL-ai/adapter-framework/blob/f2cafb0d963b54c350350967906ce59776d720a1/api/adapter/v1/adapter.proto) is sent by the ingestion service to the adapter server. For testing, you can use Postman to send a gRPC request instead.
-2. The gRPC request is validated by `config.go` and `validation.go`.
+
+2. The gRPC request is validated by `config.go` and `validation.go` and sent to `adapter.go`.
 
 `config.go`
 
 Here, you can specify additional configuration options for the adapter. For example, the API version to use, etc.
 
-https://github.com/SGNL-ai/adapter-template/blob/6fc51e38bb5cb48deecbecbaedfa44c202661709/pkg/adapter/config.go#L22-L45.
+https://github.com/SGNL-ai/adapter-template/blob/6fc51e38bb5cb48deecbecbaedfa44c202661709/pkg/adapter/config.go#L22-L45
+
+`validation.go`
+
+Here, you can specify additional validation rules for the gRPC request. For example, the maximum page size, the protocol, the authorization format, etc. `validation.go` also calls the `Validate` method in `config.go`, so any rules specified in `config.go` will also be applied.
+
+https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/validation.go
+
+3. The gRPC request is further parsed in `adapter.go`, where it is converted into a [`Request` struct](https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/client.go#L37-L58). The `Request` struct contains all the information needed to construct a request to the SoR. Additionally, `adapter.go` is responsible for:
+
+- Constructing the request to the SoR, including any parsing of page cursors and request parameters.
+- Converting the response from the SoR into `framework.Objects`, which is the format expected by the ingestion service. Any options for parsing (e.g. the format of date fields) should be specified here as well.
+
+In general, this file should be kept lean. It should serve as a top level caller to other functions such as validation or making the request to the SoR.
+
+4. The prepared `Request` struct is received by `datasource.go` and it uses this information to send an HTTP request to the SoR.
+
+`datasource.go`
+
+This is where the bulk of the code to actually make the HTTP request, parse the response, and handle pagination should be written.
+
+https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/datasource.go#L89-L152
+
+5.
 
 ### 4.
 
