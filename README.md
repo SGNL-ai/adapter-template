@@ -142,6 +142,15 @@ A simplified flow chart of an incoming gRPC request to the adapter server is sho
 
 ![Adapter Flow](docs/assets/adapter_flow.png)
 
+1. A gRPC request which follows the [adapter Protobuf schema](https://github.com/SGNL-ai/adapter-framework/blob/f2cafb0d963b54c350350967906ce59776d720a1/api/adapter/v1/adapter.proto) is sent by the ingestion service to the adapter server. For testing, you can use Postman to send a gRPC request instead.
+2. The gRPC request is validated by `config.go` and `validation.go`.
+
+`config.go`
+
+Here, you can specify additional configuration options for the adapter. For example, the API version to use, etc.
+
+https://github.com/SGNL-ai/adapter-template/blob/6fc51e38bb5cb48deecbecbaedfa44c202661709/pkg/adapter/config.go#L22-L45.
+
 ### 4.
 
 ### 5. Local Testing
