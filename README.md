@@ -37,6 +37,7 @@ TODO: Add auth information.
 ### 1. Getting Started
 
 1. Clone this repository.
+
 1. Update the names of `github.com/sgnl-ai/adapter-template/*` Golang packages in all files to match your new repository's name (e.g. `github.com/your-org/your-repo`):
 
    ```
@@ -48,18 +49,23 @@ TODO: Add auth information.
    ```
 
 1. Modify the adapter implementation in package `pkg/adapter` to query your datasource. All the code that must be modified is identified with `SCAFFOLDING` comments.
+
+1. Create an `ADAPTER_TOKENS` file which contains the tokens used to authenticate requests to the adapter server.
+
+   ```
+   ["<token1>", "<token2>", ...]
+   ```
+
+1. If you don't need to build a Docker image, you can directly run the adapter server. Set the `AUTH_TOKENS_PATH` environment variable to the path of the `ADAPTER_TOKENS` file. Then run `go run cmd/adapter/main.go`. Otherwise, proceed to the next step.
+
 1. Build the Docker image with the `adapter` command.
    ```
    docker build -t adapter:latest .
    ```
-1. **WARNING: Temporary workaround to allow `go` to download the adapter-framework module before it is made public.**
-   **The image's history will contain your environment variables, incl. any GitHub credentials that it may contain.**
-   ```
-   docker build -t adapter:latest --build-arg GITHUB_USER="$GITHUB_USER" --build-arg GITHUB_TOKEN="$GITHUB_TOKEN" .
-   ```
+   **WARNING:** The image will contain the `ADAPTER_TOKENS` file. Do not push this image to a public registry.
 1. Run the adapter server as a Docker container.
    ```
-   docker run --rm -it adapter:latest
+   docker run --rm -it -e AUTH_TOKENS_PATH=/path/to/file adapter:latest
    ```
 
 ### 2. Research the System of Record
@@ -129,3 +135,9 @@ The request restrictions for each entity. For example,
 Do not assume the results are ordered unless the API explicitly states that they are. An incorrect assumption will cause data to be synced into SGNL incorrectly.
 
 A gRPC request to the adapter server contains the above information. The adapter server uses this information to construct an appropriate request to the SoR.
+
+### 3. Understanding this Template
+
+### 4.
+
+### 5. Local Testing

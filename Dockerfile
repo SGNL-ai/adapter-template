@@ -35,6 +35,8 @@ RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v${PROTOC_GEN_GO_RP
 ARG GOPS_VERSION=v0.3.27
 RUN CGO_ENABLED=0 go install -ldflags "-s -w" github.com/google/gops@${GOPS_VERSION}
 
+ARG AUTH_TOKENS_PATH=$AUTH_TOKENS_PATH 
+
 WORKDIR /build
 COPY . ./
 
@@ -47,5 +49,6 @@ WORKDIR /
 
 COPY --from=build /go/bin/gops /gops
 COPY --from=build /build/adapter /adapter
+COPY --from=build /build/$AUTH_TOKENS_PATH /$AUTH_TOKENS_PATH
 
 ENTRYPOINT [ "/adapter" ]
