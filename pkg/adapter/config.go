@@ -27,7 +27,7 @@ type Config struct {
 	// Every field MUST have a `json` tag.
 
 	// Example config field.
-	DatasourceVersion string `json:"datasourceVersion,omitempty"`
+	APIVersion string `json:"apiVersion,omitempty"`
 }
 
 // ValidateConfig validates that a Config received in a GetPage call is valid.
@@ -37,8 +37,8 @@ func (c *Config) Validate(_ context.Context) error {
 	switch {
 	case c == nil:
 		return errors.New("request contains no config")
-	case c.DatasourceVersion == "":
-		return errors.New("config datasourceVersion is not set")
+	case c.APIVersion == "":
+		return errors.New("apiVersion is not set")
 	default:
 		return nil
 	}
