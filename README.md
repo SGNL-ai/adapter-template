@@ -13,7 +13,20 @@ The SGNL Ingestion Adapter Template is the starting point for creating a new SGN
 
 **SGNL ingestion service** - One of SGNL's core microservices which is responsible for ingesting external data into SGNL's graph database.
 
-**Datasource** - An external REST API that provides data to be ingested into SGNL. For example, a CRM tool like Salesforce or HubSpot.
+**System of Record (SoR)** - An external system that provides data to be ingested into SGNL, typically via an API. For example, a CRM tool like Salesforce or HubSpot.
+
+## Background Information
+
+The adapter is a gRPC server which has two main responsibilities:
+
+1. Making requests to a System of Record (SoR) to retrieve data.
+2. Transforming the response from the SoR into a format that can be consumed by the SGNL ingestion service.
+
+The adapter server is **stateless**. It simply acts as a proxy to send requests to SoRs and parse the responses.
+
+Requests to the adapter server invoke the `GetPage` method, which is the main entry point.
+
+TODO: Add auth information.
 
 ## Getting Started
 
