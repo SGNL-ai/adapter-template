@@ -62,7 +62,7 @@ TODO: Add auth information.
    ```
    docker build -t adapter:latest .
    ```
-   **WARNING:** The image will contain the `ADAPTER_TOKENS` file. Do not push this image to a public registry.
+   **WARNING:** The image will contain the `ADAPTER_TOKENS` file. **Do not push** this image to a public registry.
 1. Run the adapter server as a Docker container.
    ```
    docker run --rm -it -e AUTH_TOKENS_PATH=/path/to/file adapter:latest
@@ -137,6 +137,10 @@ Do not assume the results are ordered unless the API explicitly states that they
 A gRPC request to the adapter server contains the above information. The adapter server uses this information to construct an appropriate request to the SoR.
 
 ### 3. Understanding this Template
+
+A simplified flow chart of an incoming gRPC request to the adapter server is shown below:
+
+![Adapter Flow](docs/assets/adapter_flow.png)
 
 ### 4.
 
