@@ -17,7 +17,6 @@ package adapter
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	framework "github.com/sgnl-ai/adapter-framework"
 	api_adapter_v1 "github.com/sgnl-ai/adapter-framework/api/adapter/v1"
@@ -36,16 +35,6 @@ func (a *Adapter) ValidateGetPageRequest(ctx context.Context, request *framework
 	if err := request.Config.Validate(ctx); err != nil {
 		return &framework.Error{
 			Message: fmt.Sprintf("Provided config is invalid: %v.", err.Error()),
-			Code:    api_adapter_v1.ErrorCode_ERROR_CODE_INVALID_DATASOURCE_CONFIG,
-		}
-	}
-
-	// SCAFFOLDING:
-	// Modify this validation to match the format of the datasource's
-	// address.
-	if !strings.HasPrefix(request.Address, "https://") {
-		return &framework.Error{
-			Message: "Provided datasource address is not an https:// URL.",
 			Code:    api_adapter_v1.ErrorCode_ERROR_CODE_INVALID_DATASOURCE_CONFIG,
 		}
 	}
