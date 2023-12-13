@@ -11,7 +11,7 @@ The SGNL Ingestion Adapter Template is the starting point for creating a new SGN
 
 ### Terminology
 
-**Adapter** - A simple gRPC server that queries an external API and parses the response into a format suitable for the SGNL ingestion service. More information on adapters can be found [TODO].
+**Adapter** - A simple gRPC server that queries an external API and parses the response into a format suitable for the SGNL ingestion service. More information on adapters can be found in the [What is an adapter?](#what-is-an-adapter?) section.
 
 **SGNL ingestion service** - One of SGNL's core microservices which is responsible for ingesting external data into SGNL's graph database.
 
@@ -29,6 +29,8 @@ The adapter is a gRPC server which has two main responsibilities:
 The adapter server is **stateless**. It simply acts as a proxy to send requests to SoRs and parse the responses. The adapter uses SGNL's [adapter-framework](https://github.com/SGNL-ai/adapter-framework) under the hood.
 
 Requests to the adapter server invoke the `GetPage` method.
+
+### Adapter Authentication
 
 TODO: Add auth information.
 
@@ -251,7 +253,14 @@ then the `config` field should be
 
 which is base64 encoded to `eyJhcGlWZXJzaW9uIjoidjEifQ==`.
 
+### Conventions
+
+- Keep the adapter implementation as lean as possible.
+  - A logger is not needed.
+  - Limit package usage to the standard library as that should be sufficient for most use cases.
+- All errors should be handled with an appropriate `adapter-framework` error. Framework error messages should be a complete sentence starting with a capital letter and ending with a period.
+- Use `camelCase`.
+
 TODO:
 
-- Conventions
 - Marc's feedback
