@@ -1,6 +1,6 @@
 module github.com/sgnl-ai/adapter-template
 
-go 1.18
+go 1.21
 
 require (
 	github.com/sgnl-ai/adapter-framework v0.7.2
