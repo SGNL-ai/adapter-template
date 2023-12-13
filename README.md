@@ -156,7 +156,7 @@ https://github.com/SGNL-ai/adapter-template/blob/6fc51e38bb5cb48deecbecbaedfa44c
 
 Here, you can specify additional validation rules for the gRPC request. For example, the maximum page size, the protocol, the authorization format, etc. `validation.go` also calls the `Validate` method in `config.go`, so any rules specified in `config.go` will also be applied.
 
-https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/validation.go
+https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/validation.go#L35-L51
 
 3. The gRPC request is further parsed in `adapter.go`, where it is converted into a [`Request` struct](https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/client.go#L37-L58). The `Request` struct contains all the information needed to construct a request to the SoR. Additionally, `adapter.go` is responsible for:
 
@@ -173,8 +173,85 @@ This is where the bulk of the code to actually make the HTTP request, parse the 
 
 https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/datasource.go#L89-L152
 
-5.
+5. The SoR response is received by `datasource.go` and parsed.
 
-### 4.
+6. The parsed SoR response is sent to `adapter.go` where it is converted into `framework.Objects`.
 
-### 5. Local Testing
+7. The `framework.Objects` are returned to the ingestion service, which then ingests the data into SGNL.
+
+### 4. Local Testing
+
+As specified in the [Getting Started](#1-getting-started) section, you can run the adapter server locally either through Docker or directly with `go run`.
+
+```go
+go run cmd/adapter/main.go
+```
+
+By default, the adapter should listen on port 8080.
+
+Using Postman, you can send a gRPC request to the adapter server.
+
+1. Define the [`GetPage` Protobuf definition](https://github.com/SGNL-ai/adapter-framework/blob/f2cafb0d963b54c350350967906ce59776d720a1/api/adapter/v1/adapter.proto).
+
+![Define the `GetPage` Protobuf definition](/docs/assets/postman_proto_definition.png)
+
+2. In the sidebar, click on **Collections** and create a new collection with the type set to **gRPC**.
+
+3. Within this new collection, create a new gRPC request. Enter the URL of the adapter server (e.g. `http://localhost:8080`) and select the `GetPage` method, which should be available in the dropdown if step 1 was completed successfully.
+
+![Create a new gRPC request](/docs/assets/postman_new_grpc_request.png)
+
+4. In the **Metadata** tab, add a `token` key and set the value to one of the tokens in the `ADAPTER_TOKENS` file.
+
+5. In the **Message** tab, enter the `GetPage` request. It must follow the schema defined in step 1.
+
+An example gRPC request:
+
+```json
+{
+  "cursor": "",
+  "datasource": {
+    "address": "{{address}}}",
+    "auth": {
+      "http_authorization": "Bearer {{token}}"
+    },
+    "config": "{{b64_encoded_string}}"
+  },
+  "entity": {
+    "attributes": [
+      {
+        "external_id": "id",
+        "type": "ATTRIBUTE_TYPE_STRING",
+        "id": "id"
+      }
+    ],
+    "external_id": "users",
+    "id": "User",
+    "ordered": false
+  },
+  "page_size": "100"
+}
+```
+
+The `config` should be a base64 encoded string of the `Config` struct defined in `config.go`. For example, if the `Config` struct is
+
+```go
+type Config struct {
+  APIVersion string `json:"apiVersion,omitempty"`
+}
+```
+
+then the `config` field should be
+
+```json
+{
+  "apiVersion": "v1"
+}
+```
+
+which is base64 encoded to `eyJhcGlWZXJzaW9uIjoidjEifQ==`.
+
+TODO:
+
+- Conventions
+- Marc's feedback
