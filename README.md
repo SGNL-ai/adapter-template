@@ -1,6 +1,6 @@
-# SGNL Ingestion Adapter Template
+# SGNL Adapter Template
 
-The SGNL Ingestion Adapter Template is the starting point for creating a new SGNL Ingestion Adapter.
+The SGNL Adapter Template is the starting point for creating a new SGNL Adapter.
 
 ## Prerequisites
 
