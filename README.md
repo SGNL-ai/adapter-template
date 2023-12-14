@@ -32,7 +32,15 @@ Requests to the adapter server invoke the `GetPage` method.
 
 ### Adapter Authentication
 
-TODO: Add auth information.
+The adapter server authenticates incoming gRPC requests via the `token` metadata key. The value of this key must match one of the tokens in the `ADAPTER_TOKENS` file that you define. The `ADAPTER_TOKENS` file is a JSON array of strings, where each string is a token.
+
+For example, an `ADAPTER_TOKENS` file may look like:
+
+```
+["<token1>", "<token2>", ...]
+```
+
+Once this file is created, set the `AUTH_TOKENS_PATH` environment variable to the path of the `ADAPTER_TOKENS` file. More information on starting the adapter server is discussed below in the [Getting Started](#1-getting-started) section.
 
 ## Writing an Adapter
 
@@ -50,7 +58,7 @@ TODO: Add auth information.
    find pkg/ -type f -name '*.go' | xargs -n 1 sed -n -e 's,github\.com/sgnl-ai/adapter-template,github.com/your-org/your-repo,p' -i
    ```
 
-1. Modify the adapter implementation in package `pkg/adapter` to query your datasource. All the code that must be modified is identified with `SCAFFOLDING` comments.
+1. Modify the adapter implementation in package `pkg/adapter` to query your datasource. All the code that must be modified is identified with `SCAFFOLDING` comments. More implementation details are discussed in the [Understanding this Template](#3-understanding-this-template) section. For these steps, the code can be left as-is just to get the adapter server running.
 
 1. Create an `ADAPTER_TOKENS` file which contains the tokens used to authenticate requests to the adapter server.
 
@@ -64,7 +72,7 @@ TODO: Add auth information.
    ```
    docker build -t adapter:latest .
    ```
-   **WARNING:** The image will contain the `ADAPTER_TOKENS` file. **Do not push** this image to a public registry.
+   **WARNING:** The image will contain the `ADAPTER_TOKENS` secrets file. **Do not push** this image to a public registry.
 1. Run the adapter server as a Docker container.
    ```
    docker run --rm -it -e AUTH_TOKENS_PATH=/path/to/file adapter:latest
@@ -144,7 +152,7 @@ A simplified flow chart of an incoming gRPC request to the adapter server is sho
 
 ![Adapter Flow](docs/assets/adapter_flow.png)
 
-1. A gRPC request which follows the [adapter Protobuf schema](https://github.com/SGNL-ai/adapter-framework/blob/f2cafb0d963b54c350350967906ce59776d720a1/api/adapter/v1/adapter.proto) is sent by the ingestion service to the adapter server. For testing, you can use Postman to send a gRPC request instead.
+1. A gRPC request which follows the [adapter Protobuf schema](https://github.com/SGNL-ai/adapter-framework/blob/f2cafb0d963b54c350350967906ce59776d720a1/api/adapter/v1/adapter.proto) is sent by the ingestion service to the adapter server. For testing, you can use Postman to send a gRPC request instead. An example request can be found in the [Local Testing](#4-local-testing) section.
 
 2. The gRPC request is validated by `config.go` and `validation.go` and sent to `adapter.go`.
 
@@ -260,7 +268,3 @@ which is base64 encoded to `eyJhcGlWZXJzaW9uIjoidjEifQ==`.
   - Limit package usage to the standard library as that should be sufficient for most use cases.
 - All errors should be handled with an appropriate `adapter-framework` error. Framework error messages should be a complete sentence starting with a capital letter and ending with a period.
 - Use `camelCase`.
-
-TODO:
-
-- Marc's feedback
