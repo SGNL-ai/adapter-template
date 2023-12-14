@@ -189,6 +189,8 @@ https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca10
 
 7. The `framework.Objects` are returned to the ingestion service, which then ingests the data into SGNL.
 
+The majority of the required code changes are identified with `SCAFFOLDING` comments throughout this template. Most of the code in steps 6 and 7 should work out of the box, with the majority of the development being spent in steps 2, 3, and 4.
+
 ### 4. Local Testing
 
 As specified in the [Getting Started](#1-getting-started) section, you can run the adapter server locally either through Docker or directly with `go run`.
