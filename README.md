@@ -219,10 +219,11 @@ Using Postman, you can send a gRPC request to the adapter server.
 
 An example gRPC request:
 
-```json
+```jsonc
 {
   "cursor": "",
   "datasource": {
+    "type": "AdapterType-1.0.0", // The type here should match the adapter type defined in `cmd/adapter/main.go`.
     "address": "{{address}}}",
     "auth": {
       "http_authorization": "Bearer {{token}}"
