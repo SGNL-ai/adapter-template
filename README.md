@@ -112,7 +112,9 @@ The response schemas for each entity. For example, an entity response may look l
 
 Each of these JSON fields has a respective type. For example, `accountId` is a string, `active` is a boolean, etc. These must be noted because an adapter needs to know how to parse the response (and consequently the type of each field).
 
-The format of any `date` types can also be noted, e.g. RFC3339.
+The format of any `date` types can also be noted, e.g. RFC3339, as a parsing optimization for an adapter. For example, you can specify these options:
+
+https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/adapter.go#L101-L113
 
 An adapter supports the following types: https://github.com/SGNL-ai/adapter-framework/blob/f6ad1c42cd34e37be8d4ba800309b5fb858040e1/api/adapter/v1/adapter.proto#L136-L157.
 
