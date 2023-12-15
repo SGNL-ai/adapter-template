@@ -26,13 +26,13 @@ An adapter is a gRPC server which has two main responsibilities:
 1. Making requests to a System of Record (SoR) to retrieve data.
 2. Transforming the response from the SoR into a format that can be consumed by the SGNL ingestion service.
 
-An adapter server is **stateless**. It simply acts as a proxy to send requests to SoRs and parse the responses. An adapter uses SGNL's [adapter-framework](https://github.com/SGNL-ai/adapter-framework) under the hood.
+An adapter is **stateless**. It simply acts as a proxy to send requests to SoRs and parse the responses. An adapter uses SGNL's [adapter-framework](https://github.com/SGNL-ai/adapter-framework) under the hood.
 
-Requests to the adapter server invoke the `GetPage` method.
+Requests to the adapter invoke the `GetPage` method.
 
 ### Adapter Authentication
 
-An adapter server authenticates incoming gRPC requests via the `token` metadata key. The value of this key must match one of the tokens in the `ADAPTER_TOKENS` file that you define. The `ADAPTER_TOKENS` file is a JSON array of strings, where each string is a token.
+An adapter authenticates incoming gRPC requests via the `token` metadata key. The value of this key must match one of the tokens in the `ADAPTER_TOKENS` file that you define. The `ADAPTER_TOKENS` file is a JSON array of strings, where each string is a token.
 
 For example, an `ADAPTER_TOKENS` file may look like:
 
@@ -40,7 +40,7 @@ For example, an `ADAPTER_TOKENS` file may look like:
 ["<token1>", "<token2>", ...]
 ```
 
-Once this file is created, set the `AUTH_TOKENS_PATH` environment variable to the path of the `ADAPTER_TOKENS` file. More information on starting an adapter server is discussed below in the [Getting Started](#1-getting-started) section.
+Once this file is created, set the `AUTH_TOKENS_PATH` environment variable to the path of the `ADAPTER_TOKENS` file. More information on starting an adapter is discussed below in the [Getting Started](#1-getting-started) section.
 
 ## Writing an Adapter
 
@@ -58,22 +58,22 @@ Once this file is created, set the `AUTH_TOKENS_PATH` environment variable to th
    find pkg/ -type f -name '*.go' | xargs -n 1 sed -n -e 's,github\.com/sgnl-ai/adapter-template,github.com/your-org/your-repo,p' -i
    ```
 
-1. Modify the adapter implementation in package `pkg/adapter` to query your datasource. All the code that must be modified is identified with `SCAFFOLDING` comments. More implementation details are discussed in the [Understanding this Template](#3-understanding-this-template) section. For these steps, the code can be left as-is just to get the adapter server running.
+1. Modify the adapter implementation in package `pkg/adapter` to query your datasource. All the code that must be modified is identified with `SCAFFOLDING` comments. More implementation details are discussed in the [Understanding this Template](#3-understanding-this-template) section. For these steps, the code can be left as-is just to get the adapter running.
 
-1. Create an `ADAPTER_TOKENS` file which contains the tokens used to authenticate requests to the adapter server.
+1. Create an `ADAPTER_TOKENS` file which contains the tokens used to authenticate requests to the adapter.
 
    ```
    ["<token1>", "<token2>", ...]
    ```
 
-1. If you don't need to build a Docker image, you can directly run the adapter server. Set the `AUTH_TOKENS_PATH` environment variable to the path of the `ADAPTER_TOKENS` file. Then run `go run cmd/adapter/main.go`. Otherwise, proceed to the next step.
+1. If you don't need to build a Docker image, you can directly run the adapter. Set the `AUTH_TOKENS_PATH` environment variable to the path of the `ADAPTER_TOKENS` file. Then run `go run cmd/adapter/main.go`. Otherwise, proceed to the next step.
 
 1. Build the Docker image with the `adapter` command.
    ```
    docker build -t adapter:latest .
    ```
    **WARNING:** The image will contain the `ADAPTER_TOKENS` secrets file. **Do not push** this image to a public registry.
-1. Run the adapter server as a Docker container.
+1. Run the adapter as a Docker container.
    ```
    docker run --rm -it -e AUTH_TOKENS_PATH=/path/to/file adapter:latest
    ```
@@ -137,22 +137,22 @@ Ensure that the credentials being passed to an adapter have proper authorization
 The request restrictions for each entity. For example,
 
 - **Page size limits.** For paginated APIs, this is the maximum number of results that can be returned in a single request.
-- **Filters.** Responses can be filtered to return a subset of objects or fields. These are features of the SoR API which can be leveraged by an adapter server, if needed.
+- **Filters.** Responses can be filtered to return a subset of objects or fields. These are features of the SoR API which can be leveraged by an adapter, if needed.
 - **Results Ordered.** Are the results of the response ordered by some field? If so, take note of the field. Ordered results provides an optimization, but is not required.
 
 **WARNING:**
 
 Do not assume the results are ordered unless the API explicitly states that they are. An incorrect assumption will cause data to be synced into SGNL incorrectly.
 
-A gRPC request to an adapter server contains the above information. An adapter server uses this information to construct an appropriate request to the SoR.
+A gRPC request to an adapter contains the above information. An adapter uses this information to construct an appropriate request to the SoR.
 
 ### 3. Understanding this Template
 
-A simplified flow chart of an incoming gRPC request to an adapter server is shown below:
+A simplified flow chart of an incoming gRPC request to an adapter is shown below:
 
 ![Adapter Flow](docs/assets/adapter_flow.png)
 
-1. A gRPC request which follows the [adapter Protobuf schema](https://github.com/SGNL-ai/adapter-framework/blob/f2cafb0d963b54c350350967906ce59776d720a1/api/adapter/v1/adapter.proto) is sent by the ingestion service to the adapter server. For testing, you can use Postman to send a gRPC request instead. An example request can be found in the [Local Testing](#4-local-testing) section.
+1. A gRPC request which follows the [adapter Protobuf schema](https://github.com/SGNL-ai/adapter-framework/blob/f2cafb0d963b54c350350967906ce59776d720a1/api/adapter/v1/adapter.proto) is sent by the ingestion service to the adapter. For testing, you can use Postman to send a gRPC request instead. An example request can be found in the [Local Testing](#4-local-testing) section.
 
 2. The gRPC request is validated by `config.go` and `validation.go` and sent to `adapter.go`.
 
@@ -193,7 +193,7 @@ The majority of the required code changes are identified with `SCAFFOLDING` comm
 
 ### 4. Local Testing
 
-As specified in the [Getting Started](#1-getting-started) section, you can run the adapter server locally either through Docker or directly with `go run`.
+As specified in the [Getting Started](#1-getting-started) section, you can run the adapter locally either through Docker or directly with `go run`.
 
 ```go
 go run cmd/adapter/main.go
@@ -201,7 +201,7 @@ go run cmd/adapter/main.go
 
 By default, the adapter should listen on port 8080.
 
-Using Postman, you can send a gRPC request to the adapter server.
+Using Postman, you can send a gRPC request to the adapter.
 
 1. Define the [`GetPage` Protobuf definition](https://github.com/SGNL-ai/adapter-framework/blob/f2cafb0d963b54c350350967906ce59776d720a1/api/adapter/v1/adapter.proto).
 
@@ -209,7 +209,7 @@ Using Postman, you can send a gRPC request to the adapter server.
 
 2. In the sidebar, click on **Collections** and create a new collection with the type set to **gRPC**.
 
-3. Within this new collection, create a new gRPC request. Enter the URL of the adapter server (e.g. `http://localhost:8080`) and select the `GetPage` method, which should be available in the dropdown if step 1 was completed successfully.
+3. Within this new collection, create a new gRPC request. Enter the URL of the adapter (e.g. `http://localhost:8080`) and select the `GetPage` method, which should be available in the dropdown if step 1 was completed successfully.
 
 ![Create a new gRPC request](/docs/assets/postman_new_grpc_request.png)
 
