@@ -267,7 +267,6 @@ which is base64 encoded to `eyJhcGlWZXJzaW9uIjoidjEifQ==`.
 ### Conventions
 
 - Keep the adapter implementation as lean as possible.
-  - A logger is not needed.
+  - A logger is not needed as any errors returned by the adapter will be logged by the ingestion service.
   - Limit package usage to the standard library as that should be sufficient for most use cases.
 - All errors should be handled with an appropriate `adapter-framework` error. Framework error messages should be a complete sentence starting with a capital letter and ending with a period.
-- Use `camelCase`.
