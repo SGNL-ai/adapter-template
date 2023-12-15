@@ -32,13 +32,15 @@ Requests to the adapter invoke the `GetPage` method.
 
 ### Adapter Authentication
 
-An adapter authenticates incoming gRPC requests via the `token` metadata key. The value of this key must match one of the tokens in the `ADAPTER_TOKENS` file that you define. The `ADAPTER_TOKENS` file is a JSON array of strings, where each string is a token.
+An adapter authenticates incoming gRPC requests via the `token` metadata key. The value of this key must match one of the tokens in the `ADAPTER_TOKENS` file that you define. The `ADAPTER_TOKENS` file is a JSON array of strings, where each string is a token. Only one token is required, but multiple tokens can be defined in the event that a token needs to be rotated.
 
 For example, an `ADAPTER_TOKENS` file may look like:
 
 ```
 ["<token1>", "<token2>", ...]
 ```
+
+While an adapter does not validate the tokens defined, we recommend generating tokens with a length of at least 64 random bytes using a cryptographically secure pseudo random number generator (CSPRNG). For example, `openssl rand 64 | openssl enc -base64 -A`.
 
 Once this file is created, set the `AUTH_TOKENS_PATH` environment variable to the path of the `ADAPTER_TOKENS` file. More information on starting an adapter is discussed below in the [Getting Started](#1-getting-started) section.
 
