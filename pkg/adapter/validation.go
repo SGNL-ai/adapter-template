@@ -82,7 +82,7 @@ func (a *Adapter) ValidateGetPageRequest(ctx context.Context, request *framework
 		}
 	}
 
-	// SCAFFOLDING #10 - pkg/adapter/validation.go: Check for Ordered responses
+	// SCAFFOLDING #10 - pkg/adapter/validation.go: Check for Ordered responses.
 	// If the datasource doesn't support sorting results by unique ID
 	// attribute for the requested entity, check instead that Ordered is set to
 	// false.

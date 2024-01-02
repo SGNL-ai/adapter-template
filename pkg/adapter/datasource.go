@@ -50,7 +50,7 @@ type Datasource struct {
 }
 
 type DatasourceResponse struct {
-	// SCAFFOLDING #13  - pkg/adapter/datasource.go: Add or remove fields in the response as necessary. Thi is used to unmarshal the response from the SoR.
+	// SCAFFOLDING #13  - pkg/adapter/datasource.go: Add or remove fields in the response as necessary. This is used to unmarshal the response from the SoR.
 
 	// SCAFFOLDING #14 - pkg/adapter/datasource.go: Update `objects` with field name in the SoR response that contains the list of objects.
 	Objects []map[string]any `json:"objects,omitempty"`
@@ -102,7 +102,7 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 
 	req = req.WithContext(apiCtx)
 
-	// SCAFFOLDING #17 - pkg/adapter/datasource.go: Add any headers required to communicate with the SoR APIs
+	// SCAFFOLDING #17 - pkg/adapter/datasource.go: Add any headers required to communicate with the SoR APIs.
 	// Add headers to the request, if any.
 	// req.Header.Add("Accept", "application/json")
 	// req.Header.Add("Authorization", "Bearer Token")
@@ -156,10 +156,10 @@ func ParseResponse(body []byte) (objects []map[string]any, nextCursor string, er
 		}
 	}
 
-	// SCAFFOLDING #18 - pkg/adapter/datasource.go: Add response validations
+	// SCAFFOLDING #18 - pkg/adapter/datasource.go: Add response validations.
 	// Add necessary validations to check if the response from the datasource is what is expected.
 
-	// SCAFFOLDING #19 - pkg/adapter/datasource.go: Populate next page information (called cursor in SGNL adapters)
+	// SCAFFOLDING #19 - pkg/adapter/datasource.go: Populate next page information (called cursor in SGNL adapters).
 	// Populate nextCursor with the cursor returned from the datasource, if present.
 	nextCursor = ""
 
