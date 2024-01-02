@@ -28,8 +28,7 @@ import (
 // Adapter implements the framework.Adapter interface to query pages of objects
 // from datasources.
 type Adapter struct {
-	// SCAFFOLDING:
-	// Add/remove fields below as needed to configure this adapter.
+	// SCAFFOLDING #20 - pkg/adapter/adapter.go: Add or remove fields to configure the adapter
 
 	// Client provides access to the datasource.
 	Client Client
@@ -37,8 +36,7 @@ type Adapter struct {
 
 // NewAdapter instantiates a new Adapter.
 //
-// SCAFFOLDING:
-// Add/remove parameters as needed to configure this adapter.
+// SCAFFOLDING #21 - pkg/adapter/adapter.go: Add or remove parameters to match field updates above
 func NewAdapter(client Client) framework.Adapter[Config] {
 	return &Adapter{
 		Client: client,
@@ -59,13 +57,14 @@ func (a *Adapter) GetPage(ctx context.Context, request *framework.Request[Config
 func (a *Adapter) RequestPageFromDatasource(
 	ctx context.Context, request *framework.Request[Config],
 ) framework.Response {
-	// SCAFFOLDING:
-	// Modify the implementation of this method to perform a query to your
-	// real datasource.
+
+	// SCAFFOLDING #22 - pkg/adapter/adapter.go: Modify implementation to query your SoR
+	// If necessary, update this entire method to query your SoR. All of the code in this function
+	// can be updated to match your SoR requirements.
+
 	if !strings.HasPrefix(request.Address, "https://") {
 		request.Address = "https://" + request.Address
 	}
-
 	req := &Request{
 		BaseURL:          request.Address,
 		Username:         request.Auth.Basic.Username,
@@ -93,12 +92,12 @@ func (a *Adapter) RequestPageFromDatasource(
 		&request.Entity,
 		resp.Objects,
 
-		// SCAFFOLDING:
+		// SCAFFOLDING #23 - pkg/adapter/adapter.go: Disable JSONPathAttributeNames
 		// Disable JSONPathAttributeNames if your datasource does not support
 		// JSONPath attribute names. This should be enabled for most datasources.
 		web.WithJSONPathAttributeNames(),
 
-		// SCAFFOLDING:
+		// SCAFFOLDING #24 - pkg/adapter/adapter.go: List datetime formats supported by your SoR
 		// Provide a list of datetime formats supported by your datasource if
 		// they are known. This will optimize the parsing of datetime values.
 		// If this is not known, you can omit this option which will try
@@ -112,7 +111,7 @@ func (a *Adapter) RequestPageFromDatasource(
 			}...,
 		),
 
-		// SCAFFOLDING:
+		// SCAFFOLDING #25 - pkg/adapter/adapter.go: Uncomment to enable default datetime parsing format
 		// This can be provided to be used as a default value when parsing
 		// datetime values lacking timezone info. This defaults to UTC.
 		// web.WithLocalTimeZoneOffset(-7),

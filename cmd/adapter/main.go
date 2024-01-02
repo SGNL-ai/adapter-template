@@ -43,15 +43,14 @@ func main() {
 		logger.Fatalf("Failed to open server port: %v", err)
 	}
 
-	// SCAFFOLDING:
-	// Pass options to configure TLS, etc.
+	// SCAFFOLDING #1 - adapter/main.go: Pass options to configure TLS, connection parameters.
 	s := grpc.NewServer()
 
 	stop := make(chan struct{})
 
 	adapterServer := server.New(stop)
 
-	// SCAFFOLDING:
+	// SCAFFOLDING #2 - adapter/main.go: Update Adapter type
 	// The Adapter type below must be unique across all registered Adapters and match the Adapter
 	// type configured on the Adapter object via the SGNL Config API.
 	//
