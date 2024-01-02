@@ -111,7 +111,7 @@ func (a *Adapter) RequestPageFromDatasource(
 			}...,
 		),
 
-		// SCAFFOLDING #25 - pkg/adapter/adapter.go: Uncomment to enable default datetime parsing format
+		// SCAFFOLDING #25 - pkg/adapter/adapter.go: Uncomment to set the default timezone in case the ingested datetime attribute does not have timezone specified
 		// This can be provided to be used as a default value when parsing
 		// datetime values lacking timezone info. This defaults to UTC.
 		// web.WithLocalTimeZoneOffset(-7),
