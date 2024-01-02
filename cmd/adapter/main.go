@@ -50,7 +50,7 @@ func main() {
 
 	adapterServer := server.New(stop)
 
-	// SCAFFOLDING #2 - adapter/main.go: Update Adapter type.
+	// SCAFFOLDING #2 - cmd/adapter/main.go: Update Adapter type.
 	// The Adapter type below must be unique across all registered Adapters and match the Adapter
 	// type configured on the Adapter object via the SGNL Config API.
 	//
