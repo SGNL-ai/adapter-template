@@ -78,6 +78,7 @@ func (a *Adapter) RequestPageFromDatasource(
 		PageSize:         request.PageSize,
 		EntityExternalID: request.Entity.ExternalId,
 		Cursor:           request.Cursor,
+		Config:           request.Config,
 	}
 
 	resp, err := a.Client.GetPage(ctx, req)

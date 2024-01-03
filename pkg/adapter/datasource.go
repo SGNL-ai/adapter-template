@@ -29,8 +29,9 @@ import (
 
 const (
 	// SCAFFOLDING #11 - pkg/adapter/datasource.go: Update the set of valid entity types this adapter supports.
-	Users  string = "users"
-	Groups string = "groups"
+	// Using Directory API https://documentation.bamboohr.com/reference/get-employees-directory-1
+	Directory    string = "directory"
+	Applications string = "applications"
 )
 
 // Entity contains entity specific information, such as the entity's unique ID attribute and the
@@ -54,7 +55,8 @@ type DatasourceResponse struct {
 	// SCAFFOLDING #13  - pkg/adapter/datasource.go: Add or remove fields in the response as necessary. This is used to unmarshal the response from the SoR.
 
 	// SCAFFOLDING #14 - pkg/adapter/datasource.go: Update `objects` with field name in the SoR response that contains the list of objects.
-	Objects []map[string]any `json:"objects,omitempty"`
+	Employees    []map[string]any `json:"employees,omitempty"`
+	Applications []map[string]any `json:"applications,omitempty"`
 }
 
 var (
@@ -63,11 +65,11 @@ var (
 	// ValidEntityExternalIDs is a map of valid external IDs of entities that can be queried.
 	// The map value is the Entity struct which contains the unique ID attribute.
 	ValidEntityExternalIDs = map[string]Entity{
-		Users: {
-			uniqueIDAttrExternalID: "user_id",
+		Directory: {
+			uniqueIDAttrExternalID: "id",
 		},
-		Groups: {
-			uniqueIDAttrExternalID: "group_id",
+		Applications: {
+			uniqueIDAttrExternalID: "id",
 		},
 	}
 )
@@ -87,7 +89,19 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	// SCAFFOLDING #16 - pkg/adapter/datasource.go: Create the SoR API URL
 	// Populate the request with the appropriate path, headers, and query parameters to query the
 	// datasource.
-	url := fmt.Sprintf("%s/api/%s", request.BaseURL, request.EntityExternalID)
+	// The BambooHR Directory URL is as follows:
+	// https://api.bamboohr.com/api/gateway.php/{companyDomain}/v1/employees/directory
+	// The BambooHR Applications URL is as follows:
+	// https://api.bamboohr.com/api/gateway.php/{companyDomain}/v1/applicant_tracking/applications
+
+	// User must pass api.bamboohr.com/api/gateway.php/<companyDomain> as the BaseURL
+
+	url := fmt.Sprintf("%s/%s", request.BaseURL, request.Config.APIVersion)
+	if request.EntityExternalID == "employees" {
+		url = fmt.Sprintf("%s/%s/%s", url, request.EntityExternalID, Directory)
+	} else if request.EntityExternalID == "applications" {
+		url = fmt.Sprintf("%s/%s/%s", url, request.EntityExternalID, Applications)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -143,7 +157,14 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 		}
 	}
 
-	objects, nextCursor, parseErr := ParseResponse(body)
+	var parseErr *framework.Error
+	var objects []map[string]any
+	var nextCursor string
+	if request.EntityExternalID == "employees" {
+		objects, nextCursor, parseErr = ParseEmployeesResponse(body)
+	} else if request.EntityExternalID == "applications" {
+		objects, nextCursor, parseErr = ParseApplicationsResponse(body)
+	}
 	if parseErr != nil {
 		return nil, parseErr
 	}
@@ -154,7 +175,7 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	return response, nil
 }
 
-func ParseResponse(body []byte) (objects []map[string]any, nextCursor string, err *framework.Error) {
+func ParseEmployeesResponse(body []byte) (objects []map[string]any, nextCursor string, err *framework.Error) {
 	var data *DatasourceResponse
 
 	unmarshalErr := json.Unmarshal(body, &data)
@@ -172,5 +193,26 @@ func ParseResponse(body []byte) (objects []map[string]any, nextCursor string, er
 	// Populate nextCursor with the cursor returned from the datasource, if present.
 	nextCursor = ""
 
-	return data.Objects, nextCursor, nil
+	return data.Employees, nextCursor, nil
+}
+
+func ParseApplicationsResponse(body []byte) (objects []map[string]any, nextCursor string, err *framework.Error) {
+	var data *DatasourceResponse
+
+	unmarshalErr := json.Unmarshal(body, &data)
+	if unmarshalErr != nil {
+		return nil, "", &framework.Error{
+			Message: fmt.Sprintf("Failed to unmarshal the datasource response: %v.", unmarshalErr),
+			Code:    api_adapter_v1.ErrorCode_ERROR_CODE_INTERNAL,
+		}
+	}
+
+	// SCAFFOLDING #18 - pkg/adapter/datasource.go: Add response validations.
+	// Add necessary validations to check if the response from the datasource is what is expected.
+
+	// SCAFFOLDING #19 - pkg/adapter/datasource.go: Populate next page information (called cursor in SGNL adapters).
+	// Populate nextCursor with the cursor returned from the datasource, if present.
+	nextCursor = ""
+
+	return data.Employees, nextCursor, nil
 }

@@ -17,6 +17,7 @@ package adapter
 import (
 	"context"
 	"errors"
+	"fmt"
 )
 
 // Config is the optional configuration passed in each GetPage calls to the
@@ -26,7 +27,8 @@ type Config struct {
 	// Every field MUST have a `json` tag.
 
 	// Example config field.
-	APIVersion string `json:"apiVersion,omitempty"`
+	APIVersion   string `json:"apiVersion,omitempty"`
+	AcceptHeader string `json:"acceptHeader,omitempty"`
 }
 
 // ValidateConfig validates that a Config received in a GetPage call is valid.
@@ -38,6 +40,8 @@ func (c *Config) Validate(_ context.Context) error {
 		return errors.New("request contains no config")
 	case c.APIVersion == "":
 		return errors.New("apiVersion is not set")
+	case c.AcceptHeader != "application/json":
+		return errors.New(fmt.Sprintf("acceptHeader is invalid and not supported by this adapter: %s", c.AcceptHeader))
 	default:
 		return nil
 	}
