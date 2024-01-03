@@ -97,10 +97,10 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	// User must pass api.bamboohr.com/api/gateway.php/<companyDomain> as the BaseURL
 
 	url := fmt.Sprintf("%s/%s", request.BaseURL, request.Config.APIVersion)
-	if request.EntityExternalID == "employees" {
-		url = fmt.Sprintf("%s/%s/%s", url, request.EntityExternalID, Directory)
+	if request.EntityExternalID == "directory" {
+		url = fmt.Sprintf("%s/employees/%s", url, Directory)
 	} else if request.EntityExternalID == "applications" {
-		url = fmt.Sprintf("%s/%s/%s", url, request.EntityExternalID, Applications)
+		url = fmt.Sprintf("%s/applicant_tracking/%s", url, Applications)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -119,7 +119,7 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 
 	// SCAFFOLDING #17 - pkg/adapter/datasource.go: Add any headers required to communicate with the SoR APIs.
 	// Add headers to the request, if any.
-	// req.Header.Add("Accept", "application/json")
+	req.Header.Add("Accept", request.Config.AcceptHeader)
 
 	if request.Token == "" {
 		// Basic Authentication
@@ -162,7 +162,7 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	var parseErr *framework.Error
 	var objects []map[string]any
 	var nextCursor string
-	if request.EntityExternalID == "employees" {
+	if request.EntityExternalID == "directory" {
 		objects, nextCursor, parseErr = ParseEmployeesResponse(body)
 	} else if request.EntityExternalID == "applications" {
 		objects, nextCursor, parseErr = ParseApplicationsResponse(body)
@@ -216,5 +216,5 @@ func ParseApplicationsResponse(body []byte) (objects []map[string]any, nextCurso
 	// Populate nextCursor with the cursor returned from the datasource, if present.
 	nextCursor = ""
 
-	return data.Employees, nextCursor, nil
+	return data.Applications, nextCursor, nil
 }
