@@ -86,9 +86,9 @@ func (a *Adapter) ValidateGetPageRequest(ctx context.Context, request *framework
 	// If the datasource doesn't support sorting results by unique ID
 	// attribute for the requested entity, check instead that Ordered is set to
 	// false.
-	if !request.Ordered {
+	if request.Ordered {
 		return &framework.Error{
-			Message: "Ordered must be set to true.",
+			Message: "Ordered must be set to false.",
 			Code:    api_adapter_v1.ErrorCode_ERROR_CODE_INVALID_ENTITY_CONFIG,
 		}
 	}
