@@ -162,6 +162,8 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	var parseErr *framework.Error
 	var objects []map[string]any
 	var nextCursor string
+
+	// Start: Based on the entity being processed, call the corresponding ParseResponse functions
 	if request.EntityExternalID == "directory" {
 		objects, nextCursor, parseErr = ParseEmployeesResponse(body)
 	} else if request.EntityExternalID == "applications" {
@@ -170,6 +172,7 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	if parseErr != nil {
 		return nil, parseErr
 	}
+	// End
 
 	response.Objects = objects
 	response.NextCursor = nextCursor
