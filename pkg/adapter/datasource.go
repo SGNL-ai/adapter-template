@@ -105,7 +105,16 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	// SCAFFOLDING #17 - pkg/adapter/datasource.go: Add any headers required to communicate with the SoR APIs.
 	// Add headers to the request, if any.
 	// req.Header.Add("Accept", "application/json")
+
+	// Uncomment the authentication methods relevant to your System of Record
+	// Auth Token for Bearer or OAuth2.0 Client Credentials flow
 	// req.Header.Add("Authorization", "Bearer Token")
+
+	// Basic Authentication
+	// Make sure to import base64 package
+	// auth := request.Username + ":" + request.Password
+	// encodedAuth := base64.StdEncoding.EncodeToString([]byte(auth))
+	// req.Header.Add("Authorization", "Basic "+encodedAuth)
 
 	res, err := d.Client.Do(req)
 	if err != nil {

@@ -43,6 +43,9 @@ type Request struct {
 	// Password is the password to use to authenticate with the datasource.
 	Password string
 
+	// Token is the Authorization token to use to authentication with the datasource.
+	Token string
+
 	// PageSize is the maximum number of objects to return from the entity.
 	PageSize int64
 
