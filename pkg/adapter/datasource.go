@@ -108,7 +108,7 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 
 	// Uncomment the authentication methods relevant to your System of Record
 	// Auth Token for Bearer or OAuth2.0 Client Credentials flow
-	// req.Header.Add("Authorization", "Bearer Token")
+	// req.Header.Add("Authorization", request.Token)
 
 	// Basic Authentication
 	// Make sure to import base64 package
