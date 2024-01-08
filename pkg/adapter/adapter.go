@@ -69,6 +69,7 @@ func (a *Adapter) RequestPageFromDatasource(
 		BaseURL:          request.Address,
 		Username:         request.Auth.Basic.Username,
 		Password:         request.Auth.Basic.Password,
+		Token:            request.Auth.HTTPAuthorization,
 		PageSize:         request.PageSize,
 		EntityExternalID: request.Entity.ExternalId,
 		Cursor:           request.Cursor,
