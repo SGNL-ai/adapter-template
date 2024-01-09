@@ -74,6 +74,7 @@ func (a *Adapter) RequestPageFromDatasource(
 
 		// API Key or OAuth2 Token
 		Token:            request.Auth.HTTPAuthorization,
+		
 		PageSize:         request.PageSize,
 		EntityExternalID: request.Entity.ExternalId,
 		Cursor:           request.Cursor,
