@@ -16,6 +16,7 @@ package adapter
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -106,15 +107,15 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	// Add headers to the request, if any.
 	// req.Header.Add("Accept", "application/json")
 
-	// Uncomment the authentication methods relevant to your System of Record
-	// Auth Token for Bearer or OAuth2.0 Client Credentials flow
-	// req.Header.Add("Authorization", request.Token)
-
-	// Basic Authentication
-	// Make sure to import base64 package
-	// auth := request.Username + ":" + request.Password
-	// encodedAuth := base64.StdEncoding.EncodeToString([]byte(auth))
-	// req.Header.Add("Authorization", "Basic "+encodedAuth)
+	if request.Token == "" {
+		// Basic Authentication
+		auth := request.Username + ":" + request.Password
+		encodedAuth := base64.StdEncoding.EncodeToString([]byte(auth))
+		req.Header.Add("Authorization", "Basic "+encodedAuth)
+	} else {
+		// Auth Token for Bearer or OAuth2.0 Client Credentials flow
+		req.Header.Add("Authorization", request.Token)
+	}
 
 	res, err := d.Client.Do(req)
 	if err != nil {
