@@ -110,8 +110,7 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	if request.Token == "" {
 		// Basic Authentication
 		auth := request.Username + ":" + request.Password
-		encodedAuth := base64.StdEncoding.EncodeToString([]byte(auth))
-		req.Header.Add("Authorization", "Basic "+encodedAuth)
+		req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
 	} else {
 		// Auth Token for Bearer or OAuth2.0 Client Credentials flow
 		req.Header.Add("Authorization", request.Token)
