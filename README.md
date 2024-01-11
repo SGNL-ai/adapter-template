@@ -6,6 +6,7 @@ The SGNL Adapter Template is the starting point for creating a new SGNL Adapter.
 
 - A basic understanding of the Golang programming language.
 - An understanding of the [gRPC](https://grpc.io/) framework and [protocol buffers](https://protobuf.dev/).
+- Golang tools installed on your development machine, with an IDE suited for Golang development.
 
 ## Background Information
 
@@ -62,13 +63,13 @@ Once this file is created, set the `AUTH_TOKENS_PATH` environment variable to th
 
 1. Modify the adapter implementation in package `pkg/adapter` to query your datasource. All the code that must be modified is identified with `SCAFFOLDING` comments. More implementation details are discussed in the [Understanding this Template](#3-understanding-this-template) section. For these steps, the code can be left as-is just to get the adapter running.
 
-1. Create an `ADAPTER_TOKENS` file which contains the tokens used to authenticate requests to the adapter.
+1. Create a JSON file (for example, authTokens.json) that will contain the tokens used to authenticate requests to the adapter. The tokens must be stored in the following format and note down the path of the file. 
 
    ```
    ["<token1>", "<token2>", ...]
    ```
 
-1. If you don't need to build a Docker image, you can directly run the adapter. Set the `AUTH_TOKENS_PATH` environment variable to the path of the `ADAPTER_TOKENS` file. Then run `go run cmd/adapter/main.go`. Otherwise, proceed to the next step.
+1. If you don't need to build a Docker image, you can directly run the adapter. Set the `AUTH_TOKENS_PATH` environment variable to the path of the tokens file created in the previous step. Then run `go run cmd/adapter/main.go`. Otherwise, proceed to the next step.
 
 1. Build the Docker image with the `adapter` command.
    ```
@@ -114,7 +115,7 @@ The response schemas for each entity. For example, an entity response may look l
 
 Each of these JSON fields has a respective type. For example, `accountId` is a string, `active` is a boolean, etc. These must be noted because an adapter needs to know how to parse the response (and consequently the type of each field).
 
-The format of any `date` types can also be noted, e.g. RFC3339, as a parsing optimization for an adapter. For example, you can specify these options:
+The format of any `datetime` types can also be noted, e.g. RFC3339, as a parsing optimization for an adapter. For example, you can specify these options:
 
 https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/adapter.go#L101-L113
 
@@ -130,7 +131,7 @@ The required authentication method for connecting to the SoR API. The following 
 
 Basic Auth credentials and Bearer tokens are passed directly to an adapter in a `GetPage` request.
 
-OAuth flows are performed by the ingestion service which then will pass a token to an adapter for use in constructing requests to the SoR.
+OAuth flows are performed by SGNL, which then passes the access token to the adapter for use in requests to the SoR.
 
 #### Authorization
 
@@ -162,17 +163,16 @@ A simplified flow chart of an incoming gRPC request to an adapter is shown below
 
 `config.go`
 
-Here, you can specify additional configuration options for the adapter. For example, the API version to use, etc.
-
-https://github.com/SGNL-ai/adapter-template/blob/6fc51e38bb5cb48deecbecbaedfa44c202661709/pkg/adapter/config.go#L22-L45
+Here, you can specify additional configuration options for the adapter. For example, the API version to use, any HTTP headers to be sent to the SoR API, etc.
+https://github.com/SGNL-ai/adapter-template/blob/594dbc2b4eace82fb26f54204d4bdaf1c5bc2e7a/pkg/adapter/config.go#L24-L44
 
 `validation.go`
 
 Here, you can specify additional validation rules for the gRPC request. For example, the maximum page size, the protocol, the authorization format, etc. `validation.go` also calls the `Validate` method in `config.go`, so any rules specified in `config.go` will also be applied.
 
-https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/validation.go#L35-L51
+https://github.com/SGNL-ai/adapter-template/blob/594dbc2b4eace82fb26f54204d4bdaf1c5bc2e7a/pkg/adapter/validation.go#L33-L103
 
-3. The gRPC request is further parsed in `adapter.go`, where it is converted into a [`Request` struct](https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/client.go#L37-L58). The `Request` struct contains all the information needed to construct a request to the SoR. Additionally, `adapter.go` is responsible for:
+3. The gRPC request is further parsed in `adapter.go`, where it is converted into a [`Request` struct](https://github.com/SGNL-ai/adapter-template/blob/594dbc2b4eace82fb26f54204d4bdaf1c5bc2e7a/pkg/adapter/client.go#L36-L61). The `Request` struct contains all the information needed to construct a request to the SoR. Additionally, `adapter.go` is responsible for:
 
 - Constructing the request to the SoR, including any parsing of page cursors and request parameters.
 - Converting the response from the SoR into `framework.Objects`, which is the format expected by the ingestion service. Any options for parsing (e.g. the format of date fields) should be specified here as well.
@@ -185,7 +185,7 @@ In general, this file should be kept lean. It should serve as a top level caller
 
 This is where the bulk of the code to actually make the HTTP request, parse the response, and handle pagination should be written.
 
-https://github.com/SGNL-ai/adapter-template/blob/7fdf875997030e428911d1a3800ca1072906afc8/pkg/adapter/datasource.go#L89-L152
+https://github.com/SGNL-ai/adapter-template/blob/594dbc2b4eace82fb26f54204d4bdaf1c5bc2e7a/pkg/adapter/datasource.go#L84-L155
 
 5. The SoR response is received by `datasource.go` and parsed.
 
@@ -203,7 +203,7 @@ As specified in the [Getting Started](#1-getting-started) section, you can run t
 go run cmd/adapter/main.go
 ```
 
-By default, the adapter should listen on port 8080.
+By default, the adapter will listen on port 8080.
 
 Using Postman, you can send a gRPC request to the adapter.
 
@@ -268,9 +268,9 @@ then the `config` field should be
 
 which is base64 encoded to `eyJhcGlWZXJzaW9uIjoidjEifQ==`.
 
-### Conventions
+### Adapter Implementation Best Practice
 
 - Keep the adapter implementation as lean as possible.
   - A logger is not needed as any errors returned by the adapter will be logged by the ingestion service.
   - Limit package usage to the standard library as that should be sufficient for most use cases.
-- All errors should be handled with an appropriate `adapter-framework` error. Framework error messages should be a complete sentence starting with a capital letter and ending with a period.
+- All errors should be handled with an appropriate error defined in the `adapter-framework`. Framework error messages should be a complete sentence starting with a capital letter and ending with a period. The complete list of `adapter-framework` errors can be found here: https://github.com/SGNL-ai/adapter-framework/blob/f2cafb0d963b54c350350967906ce59776d720a1/api/adapter/v1/adapter.proto#L249-L288.
