@@ -110,7 +110,7 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	if request.Token == "" {
 		// Basic Authentication
 		auth := request.Username + ":" + request.Password
-		req.Header.Add("Authorization", "Basic " + base64.StdEncoding.EncodeToString([]byte(auth)))
+		req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
 	} else {
 		// Auth Token for Bearer or OAuth2.0 Client Credentials flow
 		req.Header.Add("Authorization", request.Token)
@@ -142,7 +142,8 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 			Code:    api_adapter_v1.ErrorCode_ERROR_CODE_DATASOURCE_FAILED,
 		}
 	}
-
+	// SCAFFOLDING #17-1 - pkg/adapter/datasource.go: To add support for multiple entities that require different parsing functions
+	// Add code to call different ParseResponse functions for each entity response.
 	objects, nextCursor, parseErr := ParseResponse(body)
 	if parseErr != nil {
 		return nil, parseErr
