@@ -16,7 +16,6 @@ package adapter
 
 import (
 	"context"
-	"errors"
 	"fmt"
 )
 
@@ -37,11 +36,11 @@ func (c *Config) Validate(_ context.Context) error {
 	// Update the checks below to validate the fields in Config.
 	switch {
 	case c == nil:
-		return errors.New("request contains no config")
+		return fmt.Errorf("request contains no config")
 	case c.APIVersion == "":
-		return errors.New("apiVersion is not set")
+		return fmt.Errorf("apiVersion is not set")
 	case c.AcceptHeader != "application/json":
-		return errors.New(fmt.Sprintf("acceptHeader is invalid and not supported by this adapter: %s", c.AcceptHeader))
+		return fmt.Errorf("acceptHeader is invalid and not supported by this adapter: %s", c.AcceptHeader)
 	default:
 		return nil
 	}
