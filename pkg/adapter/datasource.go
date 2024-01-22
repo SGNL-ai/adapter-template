@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	framework "github.com/sgnl-ai/adapter-framework"
@@ -214,6 +215,14 @@ func ParseApplicationsResponse(body []byte) (objects []map[string]any, nextCurso
 
 	// SCAFFOLDING #18 - pkg/adapter/datasource.go: Add response validations.
 	// Add necessary validations to check if the response from the datasource is what is expected.
+	for _, applicationsMap := range data.Applications {
+		if id, ok := applicationsMap["id"].(float64); ok {
+			// Convert float64 to int
+			intID := int(id)
+			// Convert int to string
+			applicationsMap["id"] = strconv.Itoa(intID)
+		}
+	}
 
 	// SCAFFOLDING #19 - pkg/adapter/datasource.go: Populate next page information (called cursor in SGNL adapters).
 	// Populate nextCursor with the cursor returned from the datasource, if present.
