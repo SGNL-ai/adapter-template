@@ -54,11 +54,11 @@ Once this file is created, set the `AUTH_TOKENS_PATH` environment variable to th
 1. Update the names of `github.com/sgnl-ai/adapter-template/*` Golang packages in all files to match your new repository's name (e.g. `github.com/your-org/your-repo`):
 
    ```
-   sed -e 's,^module github\.com/sgnl-ai/adapter-template,github.com/your-org/your-repo,' -i go.mod
+   sed -e 's,^module github\.com/sgnl-ai/adapter-template,module github.com/your-org/your-repo,' -i go.mod
    ```
 
    ```
-   find pkg/ -type f -name '*.go' | xargs -n 1 sed -n -e 's,github\.com/sgnl-ai/adapter-template,github.com/your-org/your-repo,p' -i
+   find . -type f -name '*.go' | xargs -n 1 sed -e 's,github\.com/sgnl-ai/adapter-template,github.com/your-org/your-repo,g' -i
    ```
 
 1. Modify the adapter implementation in package `pkg/adapter` to query your datasource. All the code that must be modified is identified with `SCAFFOLDING` comments. More implementation details are discussed in the [Understanding this Template](#3-understanding-this-template) section. For these steps, the code can be left as-is just to get the adapter running.
