@@ -119,7 +119,7 @@ func (d *Datasource) GetPage(ctx context.Context, request *Request) (*Response, 
 	res, err := d.Client.Do(req)
 	if err != nil {
 		return nil, &framework.Error{
-			Message: "Failed to send request to datasource.",
+			Message: fmt.Sprintf("Failed to send request to datasource: %v.", err),
 			Code:    api_adapter_v1.ErrorCode_ERROR_CODE_INTERNAL,
 		}
 	}
