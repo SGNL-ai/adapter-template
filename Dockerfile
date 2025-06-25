@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG GOLANG_IMAGE=golang:1.21.3-bookworm
+ARG GOLANG_IMAGE=golang:1.24-bookworm
 ARG BASE_IMAGE=gcr.io/distroless/static
 
 FROM ${GOLANG_IMAGE} as build
@@ -20,16 +20,16 @@ FROM ${GOLANG_IMAGE} as build
 RUN apt-get update && apt-get install -y \
     unzip=6.0*
 
-ARG PROTOBUF_VERSION=23.3
+ARG PROTOBUF_VERSION=29.1
 RUN curl -fSsL "https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOBUF_VERSION}/protoc-${PROTOBUF_VERSION}-linux-x86_64.zip" > /tmp/protoc.zip \
     && (cd /usr/local && unzip /tmp/protoc.zip 'bin/protoc' 'include/*')  \
     && chmod +x /usr/local/bin/protoc \
     && rm -f /tmp/protoc.zip
 
-ARG PROTOC_GEN_GO_VERSION=1.28.1
+ARG PROTOC_GEN_GO_VERSION=1.36.6
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v${PROTOC_GEN_GO_VERSION}
 
-ARG PROTOC_GEN_GO_RPC_VERSION=1.3.0
+ARG PROTOC_GEN_GO_RPC_VERSION=1.5.1
 RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v${PROTOC_GEN_GO_RPC_VERSION}
 
 ARG GOPS_VERSION=v0.3.27
